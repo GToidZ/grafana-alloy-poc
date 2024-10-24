@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-alloy-config
+  namespace: kube-prometheus-stack
+data:
+  alloy.config: |
+    // Use double-slash to denote the line as comment for "alloy.config"
+    
+    // Specify Prometheus remote-write endpoint
+    // For this development case, I enabled the remote write endpoint on Prometheus server
+    prometheus.remote_write "default" {
+      endpoint {
+        url = "http://kube-prometheus-stack-prometheus.kube-prometheus-stack:9090/api/v1/write"
+      }
+    }
+
+    // Specify an exporter, in this case, unix is the same as node-exporter
+    // ref: https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.unix/
+    prometheus.exporter.unix "node" {}
+
+    // Relabel job label on the metrics before exporting
+    discovery.relabel "job_relabel" {
+      targets = prometheus.exporter.unix.node.targets
+
+      rule {
+        target_label = "job"
+        replacement = "alloy_node_exporter"
+      }
+    }
+
+    // Specify a scraping job here
+    prometheus.scrape "cluster" {
+      targets    = discovery.relabel.job_relabel.output
+      forward_to = [prometheus.remote_write.default.receiver]
+    }
