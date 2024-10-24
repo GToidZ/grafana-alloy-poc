@@ -1,0 +1,29 @@
+// Use double-slash to denote the line as comment for "alloy.config"
+
+// Specify Prometheus remote-write endpoint
+// For this development case, I enabled the remote write endpoint on Prometheus server
+prometheus.remote_write "default" {
+  endpoint {
+	url = "http://localhost:9090/api/v1/write"
+  }
+}
+
+// Specify an exporter, in this case, host machine is Windows, so we're using "windows_exporter"
+// ref: https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.windows/
+prometheus.exporter.windows "node" {}
+
+// Relabel job label on the metrics before exporting
+discovery.relabel "job_relabel" {
+  targets = prometheus.exporter.windows.node.targets
+
+  rule {
+	target_label = "job"
+	replacement = "alloy_windows_exporter"
+  }
+}
+
+// Specify a scraping job here
+prometheus.scrape "cluster" {
+  targets    = discovery.relabel.job_relabel.output
+  forward_to = [prometheus.remote_write.default.receiver]
+}
