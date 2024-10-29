@@ -51,6 +51,7 @@
        create: false
        name: grafana-alloy-config
        key: alloy.config
+     enableReporting: false
    ```
 3. Port-forward or enable access to the Grafana service on the cluster,
    ```sh

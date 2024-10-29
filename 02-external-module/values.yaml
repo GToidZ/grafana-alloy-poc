@@ -1,0 +1,34 @@
+alloy:
+  configMap:
+    create: false
+    name: grafana-alloy-config
+    key: alloy.config
+  enableReporting: false
+  extraEnv:
+    # GitHub uses 'git' as username
+    - name: SSH_USERNAME
+      value: git
+    - name: SSH_PASSPHRASE
+      valueFrom:
+        secretKeyRef:
+          key: passphrase
+          name: grafana-alloy-ssh
+  mounts:
+    extra:
+      - mountPath: /key/ssh-privatekey
+        name: grafana-alloy-ssh
+        subPath: ssh-privatekey
+      - mountPath: /etc/ssh/ssh_known_hosts
+        name: grafana-alloy-known-hosts
+        subPath: ssh_known_hosts
+controller:
+  volumes:
+    extra:
+      - name: grafana-alloy-ssh
+        secret:
+          secretName: grafana-alloy-ssh
+          optional: false
+      - name: grafana-alloy-known-hosts
+        configMap:
+          name: grafana-alloy-known-hosts
+          optional: false

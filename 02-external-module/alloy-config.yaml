@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-alloy-config
+  namespace: kube-prometheus-stack
+data:
+  alloy.config: |
+    import.git "node_exporter" {
+      repository = "https://github.com/GToidZ/grafana-alloy-poc-modules.git"
+      revision   = "master"
+      path       = "modules/node_exporter.alloy"
+      pull_frequency = "2m"
+      ssh_key {
+        username   = sys.env("SSH_USERNAME")
+        passphrase = sys.env("SSH_PASSPHRASE")
+        key_file   = "/key/ssh-privatekey" 
+      }
+    }
+
+    // You can also potentially hide private endpoints using modules
+    prometheus.remote_write "default" {
+      endpoint {
+        url = "http://kube-prometheus-stack-prometheus.kube-prometheus-stack:9090/api/v1/write"
+      }
+    }
+
+    node_exporter.create "default" {
+      forward_to  = [prometheus.remote_write.default.receiver]
+      job_name    = "alloy_node_exporter"
+    }
