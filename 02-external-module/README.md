@@ -71,6 +71,9 @@ This file contains a `Secret` containing data of two following keys:
 * `passphrase`: passphrase needed for unlocking the `ssh` private key.
 
 ## `values.yaml`
-This file is a configuration for a Grafana Alloy `helm` chart.
+This file is a configuration for a Grafana Alloy `helm` [chart](https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml).
 It disables the creation of a new config map, and instead uses the existing one from `alloy-config.yaml`.
 It also creates volumes and mount points from other `ConfigMap` and `Secret` present in this PoC.
+
+# Notes
+* There is currently no way of knowing if the pulled configuration (from Git) has what commit hash or ref. Must only be explicitly defined in configuration.
