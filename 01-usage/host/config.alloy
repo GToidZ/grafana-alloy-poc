@@ -13,6 +13,8 @@ prometheus.remote_write "default" {
 prometheus.exporter.windows "node" {}
 
 // Relabel job label on the metrics before exporting
+// Alternatively, there is https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel,
+// but it doesn't relabel by specific metrics source
 discovery.relabel "job_relabel" {
   targets = prometheus.exporter.windows.node.targets
 
