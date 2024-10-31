@@ -6,7 +6,7 @@ metadata:
 data:
   alloy.config: |
     import.git "node_exporter" {
-      repository = "https://github.com/GToidZ/grafana-alloy-poc-modules.git"
+      repository = "github.com:GToidZ/grafana-alloy-poc-modules.git"
       revision   = "master"
       path       = "modules/node_exporter.alloy"
       pull_frequency = "2m"

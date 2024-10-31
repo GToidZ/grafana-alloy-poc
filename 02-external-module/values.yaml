@@ -1,3 +1,6 @@
+# Install with `helm repo add grafana https://grafana.github.io/helm-charts`
+# then, `helm install grafana-alloy -f values.yaml`
+
 alloy:
   configMap:
     create: false
